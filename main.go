@@ -17,6 +17,17 @@ const (
 	tplDir    = "./templates"
 )
 
+var errorMessages = map[string]map[int]string{
+	"en": {
+		http.StatusInternalServerError: "Internal server error",
+		http.StatusNotFound:            "Paste not found or expired",
+	},
+	"pt": {
+		http.StatusInternalServerError: "Erro interno do servidor",
+		http.StatusNotFound:            "Paste não encontrado ou expirado",
+	},
+}
+
 // Carrega os dois templates necessários
 var tplIndex = template.Must(template.ParseFiles(filepath.Join(tplDir, "index.html")))
 var tplView = template.Must(template.ParseFiles(filepath.Join(tplDir, "view.html")))
@@ -25,6 +36,23 @@ func randomID() string {
 	b := make([]byte, 8)
 	_, _ = rand.Read(b)
 	return hex.EncodeToString(b)
+}
+
+func localeFromRequest(r *http.Request) string {
+	accept := strings.ToLower(r.Header.Get("Accept-Language"))
+	if strings.HasPrefix(accept, "pt") {
+		return "pt"
+	}
+	return "en"
+}
+
+func httpError(w http.ResponseWriter, r *http.Request, status int, fallback string) {
+	locale := localeFromRequest(r)
+	msg := fallback
+	if localized, ok := errorMessages[locale][status]; ok {
+		msg = localized
+	}
+	http.Error(w, msg, status)
 }
 
 // ---------------- CREATE PASTE (POST) ----------------
@@ -41,14 +69,14 @@ func pasteHandler(w http.ResponseWriter, r *http.Request) {
 	
 	f, err := os.Create(file)
 	if err != nil {
-		http.Error(w, "Erro interno ao criar o registro", http.StatusInternalServerError)
+		httpError(w, r, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 	defer f.Close()
 
 	_, err = io.Copy(f, r.Body)
 	if err != nil {
-		http.Error(w, "Erro ao gravar os dados enviados", http.StatusInternalServerError)
+		httpError(w, r, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
@@ -78,7 +106,7 @@ func getPaste(w http.ResponseWriter, r *http.Request) {
 	file := filepath.Join(dataDir, id+".txt")
 
 	if _, err := os.Stat(file); os.IsNotExist(err) {
-		http.Error(w, "Paste não encontrado ou expirado", http.StatusNotFound)
+		httpError(w, r, http.StatusNotFound, "Paste not found or expired")
 		return
 	}
 
@@ -93,7 +121,7 @@ func getPaste(w http.ResponseWriter, r *http.Request) {
 	// Caso contrário, lê o conteúdo e injeta no template de visualização premium
 	contentBytes, err := os.ReadFile(file)
 	if err != nil {
-		http.Error(w, "Erro ao ler o conteúdo", http.StatusInternalServerError)
+		httpError(w, r, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 

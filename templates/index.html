@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>GFONSECA Pastebin — Compartilhamento Inteligente de Código</title>
+  <title>GFONSECA Pastebin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Cole, compartilhe e visualize código, JSON e logs em segundos.">
+  <meta name="description" content="Paste, share, and view code, JSON, and logs in seconds.">
   <meta name="theme-color" content="#0a0910">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect fill='%237c3aed' rx='8' width='32' height='32'/><path fill='white' d='M10 9l4 4-4 4v-3H6v-2h4V9zm12 0v3h4v2h-4v3l-4-4 4-4z'/></svg>">
 
@@ -15,7 +15,12 @@
   <link rel="stylesheet" href="/static/style.css">
   <link rel="stylesheet" href="/static/prism.css">
 </head>
-<body>
+<body data-page="index">
+
+<div class="lang-switcher" role="group" aria-label="Language">
+  <button type="button" class="lang-btn" data-lang="en">EN</button>
+  <button type="button" class="lang-btn" data-lang="pt">PT</button>
+</div>
 
 <div class="ambient-glow">
   <div class="glow-1"></div>
@@ -25,7 +30,7 @@
 
 <div class="container">
   <header class="header">
-    <div class="badge"><span class="badge-dot"></span> v1.0 · Online</div>
+    <div class="badge"><span class="badge-dot"></span> <span data-i18n="badge.online">v1.0 · Online</span></div>
     <div class="logo-area">
       <div class="logo-icon-wrapper">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -37,24 +42,24 @@
       </div>
       <h1>GFONSECA<span> Pastebin</span></h1>
     </div>
-    <p>A forma mais rápida e elegante de compartilhar logs, códigos, JSON e scripts — com link instantâneo.</p>
+    <p data-i18n="tagline">The fastest, most elegant way to share logs, code, JSON, and scripts — with instant links.</p>
 
     <div class="feature-pills">
       <span class="feature-pill feature-pill--accent">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        Instantâneo
+        <span data-i18n="pill.instant">Instant</span>
       </span>
       <span class="feature-pill">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        Link seguro
+        <span data-i18n="pill.secure">Secure link</span>
       </span>
       <span class="feature-pill">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-        CLI · cURL &amp; Wget
+        <span data-i18n="pill.cli">CLI · cURL &amp; Wget</span>
       </span>
       <span class="feature-pill">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        Syntax highlight
+        <span data-i18n="pill.syntax">Syntax highlight</span>
       </span>
     </div>
   </header>
@@ -70,36 +75,36 @@
           </div>
           <div class="active-tab">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            novo_paste.txt
+            new_paste.txt
           </div>
           <div class="editor-status-badge">
-            <span class="live-pulse"></span> Servidor pronto
+            <span class="live-pulse"></span> <span data-i18n="editor.status">Server ready</span>
           </div>
         </div>
 
         <div class="editor-body">
           <div class="editor-gutter" id="lineGutter" aria-hidden="true"><span>1</span></div>
-          <textarea id="content" placeholder="// Cole ou digite seu código aqui…&#10;// Ctrl+Enter para gerar o link" spellcheck="false"></textarea>
+          <textarea id="content" data-i18n-placeholder="editor.placeholder" placeholder="// Paste or type your code here…" spellcheck="false"></textarea>
         </div>
 
         <div class="editor-footer-bar">
-          <span id="charCount">0 caracteres</span>
-          <span id="lineCount">1 linha</span>
+          <span id="charCount">0 characters</span>
+          <span id="lineCount">1 line</span>
         </div>
       </div>
 
       <div class="actions-wrapper">
         <button type="submit" id="submitBtn">
           <span class="btn-content">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            Criar link seguro
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></polygon></svg>
+            <span data-i18n="btn.create">Create secure link</span>
           </span>
           <kbd class="btn-kbd">Ctrl + Enter</kbd>
         </button>
 
         <div class="cli-hint-box">
-          <span class="cli-title">Via terminal (POST)</span>
-          <code class="cli-code">cat arquivo | curl --data-binary @- https://paste.gfonseca.online/paste</code>
+          <span class="cli-title" data-i18n="cli.title">Via terminal (POST)</span>
+          <code class="cli-code" data-i18n="cli.example">cat file | curl --data-binary @- https://paste.gfonseca.online/paste</code>
         </div>
       </div>
     </form>
@@ -107,43 +112,43 @@
     <div class="result-display-card" id="resultCard" style="display:none;">
       <div class="result-success-header">
         <div class="success-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></polyline></svg>
         </div>
         <div>
-          <h3>Link gerado com sucesso</h3>
-          <p>Seu conteúdo foi salvo e está pronto para compartilhar.</p>
+          <h3 data-i18n="result.title">Link generated successfully</h3>
+          <p data-i18n="result.subtitle">Your content has been saved and is ready to share.</p>
         </div>
       </div>
 
       <div class="custom-url-field">
         <div class="link-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></path></svg>
         </div>
         <input type="text" id="pasteUrl" readonly>
         <button type="button" id="copyBtn">
-          <span id="copyBtnText">Copiar link</span>
+          <span id="copyBtnText" data-i18n="btn.copyLink">Copy link</span>
         </button>
       </div>
 
       <div class="advanced-share-options">
-        <div class="share-options-title">Comandos para download (clique para copiar)</div>
+        <div class="share-options-title" data-i18n="share.title">Download commands (click to copy)</div>
 
-        <div class="shell-command-wrapper" data-copy-target="curlCommand" title="Clique para copiar">
+        <div class="shell-command-wrapper" data-copy-target="curlCommand" data-i18n-title="share.copyTitle">
           <span class="shell-label">cURL</span>
           <code id="curlCommand" class="shell-code-text">curl -L https://…</code>
-          <span class="shell-copy-hint">copiar</span>
+          <span class="shell-copy-hint" data-i18n="share.copy">copy</span>
         </div>
 
-        <div class="shell-command-wrapper" data-copy-target="wgetCommand" title="Clique para copiar">
+        <div class="shell-command-wrapper" data-copy-target="wgetCommand" data-i18n-title="share.copyTitle">
           <span class="shell-label">Wget</span>
           <code id="wgetCommand" class="shell-code-text">wget -qO- https://…</code>
-          <span class="shell-copy-hint">copiar</span>
+          <span class="shell-copy-hint" data-i18n="share.copy">copy</span>
         </div>
 
         <div class="raw-action-row">
           <a id="rawLinkBtn" target="_blank" rel="noopener" class="raw-view-button">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            Visualizar texto puro (RAW)
+            <span data-i18n="share.raw">View plain text (RAW)</span>
           </a>
         </div>
       </div>
@@ -156,11 +161,12 @@
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
     GFONSECA Pastebin
   </div>
-  <p>Feito com Go · <a href="https://paste.gfonseca.online">paste.gfonseca.online</a></p>
+  <p><span data-i18n="footer.madeWith">Built with Go ·</span> <a href="https://paste.gfonseca.online">paste.gfonseca.online</a></p>
 </footer>
 
 <div class="toast" id="toast" role="alert"></div>
 
+<script src="/static/i18n.js"></script>
 <script src="/static/prism.js"></script>
 <script src="/static/prism-bash.min.js"></script>
 <script src="/static/prism-go.min.js"></script>
@@ -173,19 +179,34 @@ const lineGutter = document.getElementById("lineGutter");
 const charCountEl = document.getElementById("charCount");
 const lineCountEl = document.getElementById("lineCount");
 const submitBtn = document.getElementById("submitBtn");
-const defaultBtnHTML = submitBtn.innerHTML;
+const copyBtnText = document.getElementById("copyBtnText");
+
+function getSubmitBtnHTML() {
+  return `<span class="btn-content">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></polygon></svg>
+    <span data-i18n="btn.create">${PastebinI18n.t("btn.create")}</span>
+  </span>
+  <kbd class="btn-kbd">Ctrl + Enter</kbd>`;
+}
 
 function updateEditorStats() {
   const text = textarea.value;
   const lines = text.split("\n");
   const lineNum = Math.max(lines.length, 1);
+  const locale = PastebinI18n.numberLocale();
 
   lineGutter.innerHTML = Array.from({ length: lineNum }, (_, i) =>
     `<span>${i + 1}</span>`
   ).join("");
 
-  charCountEl.textContent = `${text.length.toLocaleString("pt-BR")} caracteres`;
-  lineCountEl.textContent = `${lineNum} ${lineNum === 1 ? "linha" : "linhas"}`;
+  charCountEl.textContent = PastebinI18n.t("editor.chars", {
+    n: text.length.toLocaleString(locale),
+  });
+
+  lineCountEl.textContent = PastebinI18n.t(
+    lineNum === 1 ? "editor.line" : "editor.lines",
+    { n: lineNum.toLocaleString(locale) }
+  );
 }
 
 function showToast(msg) {
@@ -199,6 +220,15 @@ textarea.addEventListener("input", updateEditorStats);
 textarea.addEventListener("scroll", () => {
   lineGutter.scrollTop = textarea.scrollTop;
 });
+
+PastebinI18n.onChange(() => {
+  updateEditorStats();
+  submitBtn.innerHTML = getSubmitBtnHTML();
+  if (copyBtnText.textContent !== PastebinI18n.t("btn.copied")) {
+    copyBtnText.textContent = PastebinI18n.t("btn.copyLink");
+  }
+});
+
 updateEditorStats();
 
 textarea.addEventListener("keydown", (e) => {
@@ -213,8 +243,7 @@ document.getElementById("copyBtn").addEventListener("click", copyToClipboard);
 document.querySelectorAll(".shell-command-wrapper[data-copy-target]").forEach((el) => {
   el.addEventListener("click", () => {
     const id = el.dataset.copyTarget;
-    const text = document.getElementById(id).innerText;
-    navigator.clipboard.writeText(text);
+    navigator.clipboard.writeText(document.getElementById(id).innerText);
     el.classList.add("copied");
     setTimeout(() => el.classList.remove("copied"), 1500);
   });
@@ -226,7 +255,7 @@ form.addEventListener("submit", async (e) => {
   if (!content) return;
 
   submitBtn.disabled = true;
-  submitBtn.innerHTML = '<span class="btn-content">Gerando link…</span>';
+  submitBtn.innerHTML = `<span class="btn-content">${PastebinI18n.t("btn.generating")}</span>`;
 
   try {
     const res = await fetch("/paste", { method: "POST", body: content });
@@ -246,26 +275,23 @@ form.addEventListener("submit", async (e) => {
 
     card.scrollIntoView({ behavior: "smooth", block: "nearest" });
   } catch {
-    showToast("Não foi possível salvar o paste. Tente novamente.");
+    showToast(PastebinI18n.t("toast.error"));
   } finally {
     submitBtn.disabled = false;
-    submitBtn.innerHTML = defaultBtnHTML;
+    submitBtn.innerHTML = getSubmitBtnHTML();
   }
 });
 
 function copyToClipboard() {
-  const copyText = document.getElementById("pasteUrl");
-  navigator.clipboard.writeText(copyText.value);
+  navigator.clipboard.writeText(document.getElementById("pasteUrl").value);
 
   const copyBtn = document.getElementById("copyBtn");
-  const copyBtnText = document.getElementById("copyBtnText");
-
   copyBtn.classList.add("success-pulse");
-  copyBtnText.innerText = "Copiado!";
+  copyBtnText.textContent = PastebinI18n.t("btn.copied");
 
   setTimeout(() => {
     copyBtn.classList.remove("success-pulse");
-    copyBtnText.innerText = "Copiar link";
+    copyBtnText.textContent = PastebinI18n.t("btn.copyLink");
   }, 2500);
 }
 </script>
