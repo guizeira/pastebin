@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Paste {{.ID}} — Visualizador</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a0910">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect fill='%237c3aed' rx='8' width='32' height='32'/><path fill='white' d='M10 9l4 4-4 4v-3H6v-2h4V9zm12 0v3h4v2h-4v3l-4-4 4-4z'/></svg>">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/prism.css">
+</head>
+<body>
+
+<div class="ambient-glow">
+  <div class="glow-1"></div>
+  <div class="glow-2"></div>
+  <div class="glow-3"></div>
+</div>
+
+<div class="container">
+  <header class="header view-header">
+    <div class="logo-area">
+      <a href="/">
+        <div class="logo-icon-wrapper logo-icon-wrapper--sm">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </div>
+        <h1>Visualizar<span> Paste</span></h1>
+      </a>
+    </div>
+  </header>
+
+  <div class="paste-meta-bar">
+    <span class="meta-chip meta-chip--id">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+      {{.ID}}
+    </span>
+    <span class="meta-chip" id="sizeChip">—</span>
+  </div>
+
+  <main>
+    <div class="preview-window-card">
+      <div class="preview-header">
+        <div class="window-controls">
+          <span class="control-dot red"></span>
+          <span class="control-dot yellow"></span>
+          <span class="control-dot green"></span>
+          <span class="preview-filename">paste_{{.ID}}.txt</span>
+        </div>
+
+        <div class="view-actions-wrapper">
+          <a href="/{{.ID}}/raw" target="_blank" rel="noopener" class="raw-view-button">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Texto puro (RAW)
+          </a>
+          <button type="button" id="copyCodeBtn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span id="copyCodeText">Copiar código</span>
+          </button>
+        </div>
+      </div>
+
+      <pre><code id="rawCodeBlock" class="language-bash">{{.Content}}</code></pre>
+    </div>
+
+    <textarea id="hiddenCodeBox" hidden>{{.Content}}</textarea>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    GFONSECA Pastebin
+  </div>
+  <p><a href="/">Criar novo paste</a> · paste.gfonseca.online</p>
+</footer>
+
+<script src="/static/prism.js"></script>
+<script src="/static/prism-bash.min.js"></script>
+<script src="/static/prism-go.min.js"></script>
+<script src="/static/prism-json.min.js"></script>
+
+<script>
+(function () {
+  const code = document.getElementById("hiddenCodeBox").value;
+  const bytes = new TextEncoder().encode(code).length;
+  const lines = code.split("\n").length;
+  const fmt = (n) => n.toLocaleString("pt-BR");
+  document.getElementById("sizeChip").textContent =
+    `${fmt(bytes)} bytes · ${fmt(lines)} ${lines === 1 ? "linha" : "linhas"}`;
+
+  if (typeof Prism !== "undefined") {
+    Prism.highlightElement(document.getElementById("rawCodeBlock"));
+  }
+})();
+
+document.getElementById("copyCodeBtn").addEventListener("click", () => {
+  const codeText = document.getElementById("hiddenCodeBox").value;
+  navigator.clipboard.writeText(codeText);
+
+  const btn = document.getElementById("copyCodeBtn");
+  const txt = document.getElementById("copyCodeText");
+
+  btn.classList.add("copied");
+  txt.innerText = "Copiado!";
+
+  setTimeout(() => {
+    btn.classList.remove("copied");
+    txt.innerText = "Copiar código";
+  }, 2000);
+});
+</script>
+</body>
+</html>
