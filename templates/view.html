@@ -55,14 +55,13 @@
             <span class="control-dot red"></span>
             <span class="control-dot yellow"></span>
             <span class="control-dot green"></span>
-            <span class="preview-filename">paste_{{.ID}}.{{if eq .Lang "python"}}py{{else if eq .Lang "sql"}}sql{{else}}sh{{end}}</span>
           </div>
         </div>
 
         <div class="syntax-switcher-wrap syntax-switcher-wrap--view">
           <div class="syntax-switcher" role="group" aria-label="Syntax">
             {{range .Langs}}
-            <a href="/{{$.ID}}?lang={{.}}" class="syntax-btn{{if eq . $.Lang}} syntax-btn--active{{end}}">{{.}}</a>
+            <a href="/{{$.ID}}?lang={{.}}&amp;fullscreen=1" class="syntax-btn{{if eq . $.Lang}} syntax-btn--active{{end}}">{{.}}</a>
             {{end}}
           </div>
         </div>

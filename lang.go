@@ -62,5 +62,5 @@ func resolveLang(queryLang, storedLang, content string) string {
 
 func pasteURL(id, lang string) string {
 	lang = normalizeLang(lang)
-	return "https://paste.gfonseca.online/" + id + "?lang=" + lang
+	return "https://paste.gfonseca.online/" + id + "?lang=" + lang + "&fullscreen=1"
 }

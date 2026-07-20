@@ -33,7 +33,7 @@ func TestResolveLang(t *testing.T) {
 }
 
 func TestPasteURL(t *testing.T) {
-	want := "https://paste.gfonseca.online/abc123?lang=python"
+	want := "https://paste.gfonseca.online/abc123?lang=python&fullscreen=1"
 	if got := pasteURL("abc123", "py"); got != want {
 		t.Fatalf("got %q want %q", got, want)
 	}
