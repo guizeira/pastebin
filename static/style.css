@@ -927,6 +927,19 @@ code {
   line-height: 1.65 !important;
 }
 
+/* ANSI terminal colors (from escape sequences) */
+code.ansi-rendered {
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--text-primary);
+}
+
+code.ansi-rendered span {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
 /* Footer */
 .site-footer {
   position: relative;
