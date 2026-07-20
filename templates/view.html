@@ -45,10 +45,13 @@
       {{.ID}}
     </span>
     <span class="meta-chip" id="sizeChip">—</span>
-    <div class="syntax-switcher" role="group" aria-label="Syntax">
-      {{range .Langs}}
-      <a href="/{{$.ID}}?lang={{.}}" class="syntax-btn{{if eq . $.Lang}} syntax-btn--active{{end}}">{{.}}</a>
-      {{end}}
+    <div class="syntax-switcher-wrap">
+      <span class="syntax-label" data-i18n="syntax.label">Format</span>
+      <div class="syntax-switcher" role="group" aria-label="Syntax">
+        {{range .Langs}}
+        <a href="/{{$.ID}}?lang={{.}}" class="syntax-btn{{if eq . $.Lang}} syntax-btn--active{{end}}">{{.}}</a>
+        {{end}}
+      </div>
     </div>
   </div>
 
@@ -75,9 +78,9 @@
       </div>
 
       {{if .HasANSI}}
-      <pre><code id="rawCodeBlock" class="language-ansi ansi-rendered">{{.ContentHTML}}</code></pre>
+      <pre class="language-ansi"><code id="rawCodeBlock" class="language-ansi ansi-rendered">{{.ContentHTML}}</code></pre>
       {{else}}
-      <pre><code id="rawCodeBlock" class="language-{{.Lang}}">{{.Content}}</code></pre>
+      <pre class="language-{{.Lang}}"><code id="rawCodeBlock" class="language-{{.Lang}}">{{.Content}}</code></pre>
       {{end}}
     </div>
 

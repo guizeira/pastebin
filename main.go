@@ -149,8 +149,8 @@ func getPaste(w http.ResponseWriter, r *http.Request) {
 		Langs:   []string{"bash", "sql", "python"},
 	}
 
-	// Terminal color sequences only make sense for bash/log pastes.
-	if lang == "bash" && hasANSI(content) {
+	// Colored terminal output is independent of the syntax highlighter choice.
+	if hasANSI(content) {
 		view.HasANSI = true
 		view.ContentHTML = template.HTML(ansiToHTML(content))
 	}
