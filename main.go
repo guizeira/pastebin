@@ -125,13 +125,23 @@ func getPaste(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := map[string]string{
-		"ID":      id,
-		"Content": string(contentBytes),
+	content := string(contentBytes)
+	view := struct {
+		ID          string
+		Content     string
+		ContentHTML template.HTML
+		HasANSI     bool
+	}{
+		ID:      id,
+		Content: content,
+	}
+	if hasANSI(content) {
+		view.HasANSI = true
+		view.ContentHTML = template.HTML(ansiToHTML(content))
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	_ = tplView.Execute(w, data)
+	_ = tplView.Execute(w, view)
 }
 
 // ---------------- STATIC ----------------

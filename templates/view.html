@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="/static/style.css">
   <link rel="stylesheet" href="/static/prism.css">
 </head>
-<body data-page="view" data-paste-id="{{.ID}}">
+<body data-page="view" data-paste-id="{{.ID}}" data-has-ansi="{{if .HasANSI}}1{{else}}0{{end}}">
 
 <div class="lang-switcher" role="group" aria-label="Language">
   <button type="button" class="lang-btn" data-lang="en">EN</button>
@@ -69,7 +69,11 @@
         </div>
       </div>
 
+      {{if .HasANSI}}
+      <pre><code id="rawCodeBlock" class="language-ansi ansi-rendered">{{.ContentHTML}}</code></pre>
+      {{else}}
       <pre><code id="rawCodeBlock" class="language-bash">{{.Content}}</code></pre>
+      {{end}}
     </div>
 
     <textarea id="hiddenCodeBox" hidden>{{.Content}}</textarea>
@@ -85,11 +89,12 @@
 </footer>
 
 <script src="/static/i18n.js"></script>
-<script src="/static/ansi.js"></script>
+{{if not .HasANSI}}
 <script src="/static/prism.js"></script>
 <script src="/static/prism-bash.min.js"></script>
 <script src="/static/prism-go.min.js"></script>
 <script src="/static/prism-json.min.js"></script>
+{{end}}
 
 <script>
 const code = document.getElementById("hiddenCodeBox").value;
@@ -97,7 +102,7 @@ const bytes = new TextEncoder().encode(code).length;
 const lineCount = code.split("\n").length;
 const sizeChip = document.getElementById("sizeChip");
 const copyCodeText = document.getElementById("copyCodeText");
-const codeBlock = document.getElementById("rawCodeBlock");
+const hasAnsi = document.body.dataset.hasAnsi === "1";
 
 function updateSizeChip() {
   const locale = PastebinI18n.numberLocale();
@@ -117,11 +122,8 @@ PastebinI18n.onChange(() => {
 
 updateSizeChip();
 
-if (typeof AnsiUp !== "undefined" && AnsiUp.hasAnsi(code)) {
-  codeBlock.className = "language-ansi ansi-rendered";
-  codeBlock.innerHTML = AnsiUp.ansiToHtml(code);
-} else if (typeof Prism !== "undefined") {
-  Prism.highlightElement(codeBlock);
+if (!hasAnsi && typeof Prism !== "undefined") {
+  Prism.highlightElement(document.getElementById("rawCodeBlock"));
 }
 
 document.getElementById("copyCodeBtn").addEventListener("click", () => {

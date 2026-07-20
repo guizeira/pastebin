@@ -1,0 +1,175 @@
+[1;35m
+=================================================
+ WHMCS Apache/MySQL Troubleshooting
+ Date: Mon Jul 20 17:36:49 -03 2026
+ Host: whmcs1.hostgator.com.br
+=================================================
+[0m
+
+[1;34m=================================================[0m
+[1;36mApache MPM[0m
+[1;34m=================================================[0m
+Server MPM:     prefork
+[1;33m[WARN][0m Apache usando MPM prefork
+[1;33m[WARN][0m Prefork cria 1 processo por request e pode limitar concorrência
+
+[1;34m=================================================[0m
+[1;36mPHP Modules[0m
+[1;34m=================================================[0m
+ mpm_prefork_module (shared)
+ proxy_fcgi_module (shared)
+ php7_module (shared)
+
+[1;34m=================================================[0m
+[1;36mApache Configuration Limits[0m
+[1;34m=================================================[0m
+
+[1;34m=================================================[0m
+[1;36mApache Saturation - MaxRequestWorkers[0m
+[1;34m=================================================[0m
+[1;33m[WARN][0m MaxRequestWorkers não encontrado explicitamente
+
+MaxRequestWorkers errors:
+Occurrences: 1
+[1;31m[CRITICAL][0m 
+Apache atingiu MaxRequestWorkers.
+
+Possível impacto:
+- HAProxy timeout
+- HTTP 502/503
+- fila de requests
+- aumento de latência
+- pressão no MySQL
+
+
+Últimas ocorrências:
+[Mon Jul 20 17:01:23.396945 2026] [mpm_prefork:error] [pid 8005] AH00161: server reached MaxRequestWorkers setting, consider raising the MaxRequestWorkers setting
+
+[1;34m=================================================[0m
+[1;36mApache Server Status[0m
+[1;34m=================================================[0m
+ServerUptimeSeconds: 2630
+ServerUptime: 43 minutes 50 seconds
+CPULoad: 102.821
+ReqPerSec: 35.6376
+BusyWorkers: 22
+IdleWorkers: 33
+
+[1;34m=================================================[0m
+[1;36mTCP MySQL Connections[0m
+[1;34m=================================================[0m
+     21 ESTAB
+   3892 TIME-WAIT
+
+Established MySQL:
+22
+
+[1;34m=================================================[0m
+[1;36mTIME_WAIT[0m
+[1;34m=================================================[0m
+   4418 TIME-WAIT
+
+[1;34m=================================================[0m
+[1;36mSYN-SENT[0m
+[1;34m=================================================[0m
+Recv-Q Send-Q Local Address:Port               Peer Address:Port              
+0      1       10.249.0.14:56114              192.185.0.117:514                
+
+[1;34m=================================================[0m
+[1;36mApache Process Count[0m
+[1;34m=================================================[0m
+httpd processes: 56
+
+[1;34m=================================================[0m
+[1;36mTop Apache CPU[0m
+[1;34m=================================================[0m
+27800 apache    9.3  0.0       00:48 /opt/rh/httpd24/root/usr/sbin/httpd -DFOREGROUND
+28017 apache    9.1  0.0       00:39 /opt/rh/httpd24/root/usr/sbin/httpd -DFOREGROUND
+26744 apache    9.1  0.0       01:38 /opt/rh/httpd24/root/usr/sbin/httpd -DFOREGROUND
+28152 apache    9.0  0.0       00:33 /opt/rh/httpd24/root/usr/sbin/httpd -DFOREGROUND
+28369 apache    8.8  0.0       00:23 /opt/rh/httpd24/root/usr/sbin/httpd -DFOREGROUND
+26488 apache    8.8  0.0       01:49 /opt/rh/httpd24/root/usr/sbin/httpd -DFOREGROUND
+26627 apache    8.7  0.0       01:44 /opt/rh/httpd24/root/usr/sbin/httpd -DFOREGROUND
+26484 apache    8.7  0.0       01:49 /opt/rh/httpd24/root/usr/sbin/httpd -DFOREGROUND
+25912 apache    8.7  0.0       02:09 /opt/rh/httpd24/root/usr/sbin/httpd -DFOREGROUND
+25965 apache    8.6  0.0       02:07 /opt/rh/httpd24/root/usr/sbin/httpd -DFOREGROUND
+26069 apache    8.4  0.0       02:03 /opt/rh/httpd24/root/usr/sbin/httpd -DFOREGROUND
+22505 apache    8.4  0.0       04:10 /opt/rh/httpd24/root/usr/sbin/httpd -DFOREGROUND
+27910 apache    8.3  0.0       00:47 /opt/rh/httpd24/root/usr/sbin/httpd -DFOREGROUND
+26629 apache    8.2  0.0       01:44 /opt/rh/httpd24/root/usr/sbin/httpd -DFOREGROUND
+25953 apache    8.2  0.0       02:07 [httpd] <defunct>
+25932 whmcs     8.2  0.0       02:08 /opt/rh/httpd24/root/usr/sbin/httpd -DFOREGROUND
+26865 apache    8.1  0.1       01:30 /opt/rh/httpd24/root/usr/sbin/httpd -DFOREGROUND
+22605 whmcs     8.0  0.0       04:06 /opt/rh/httpd24/root/usr/sbin/httpd -DFOREGROUND
+26759 apache    7.9  0.0       01:37 /opt/rh/httpd24/root/usr/sbin/httpd -DFOREGROUND
+22728 apache    7.4  0.0       04:05 /opt/rh/httpd24/root/usr/sbin/httpd -DFOREGROUND
+
+[1;34m=================================================[0m
+[1;36mTop URLs Access[0m
+[1;34m=================================================[0m
+ 135379 /
+  55656 /api/v2/clientarea/br/user/hostings/temporary-domains
+  49157 /api/v3/lives
+  35594 /api/v2/jwt/key
+  33883 /api/v3/gator-protect
+  33330 /api/v2/sitelock/free/open-new-modal
+  32717 /api/v2/clientarea/br/alert_client_info
+  26029 /api/v2/clientarea/br/user/domains?page=1
+  21177 /api/v2/clientarea/br/generalProducts
+  20480 /api/v2/clientarea/br/summary
+  20248 /api/v2/clientarea/br/invoices/getAmount
+  19692 /api/v2/clientarea/br/featuretoggles
+  19658 /api/v3/support/departments
+  19618 /api/v3/alerts
+  19522 /api/v3/countries/phone-codes
+  19322 /api/v2/clientarea/br/user/onboarding
+  19035 *
+  17444 /api/v3/zendesk/token
+  16694 /api/v2/clientarea/br/products-by-status?status=Active,Suspended,Expired,Cancelled,Terminated,Pending
+  15980 /index.php
+
+[1;34m=================================================[0m
+[1;36mResources[0m
+[1;34m=================================================[0m
+ 17:36:59 up 1001 days,  9:00,  1 user,  load average: 3.37, 5.11, 7.32
+              total        used        free      shared  buff/cache   available
+Mem:            62G        6.4G        7.2G        3.1G         49G         52G
+Swap:            0B          0B          0B
+
+top - 17:36:59 up 1001 days,  9:00,  1 user,  load average: 3.37, 5.11, 7.32
+Tasks: 401 total,   5 running, 396 sleeping,   0 stopped,   0 zombie
+%Cpu(s): 35.9 us,  6.8 sy,  0.0 ni, 57.0 id,  0.0 wa,  0.0 hi,  0.3 si,  0.0 st
+KiB Mem : 65805732 total,  7530016 free,  6731292 used, 51544424 buff/cache
+KiB Swap:        0 total,        0 free,        0 used. 55246472 avail Mem 
+
+[1;34m=================================================[0m
+[1;36mWHMCS Cron[0m
+[1;34m=================================================[0m
+
+[1;34m=================================================[0m
+[1;36mNetwork[0m
+[1;34m=================================================[0m
+Local IP:
+10.249.0.14 
+
+Total: 636 (kernel 2670)
+TCP:   4579 (estab 201, closed 4355, orphaned 0, synrecv 0, timewait 4355/0), ports 0
+
+Transport Total     IP        IPv6
+*	  2670      -         -        
+RAW	  2         1         1        
+UDP	  10        9         1        
+TCP	  224       222       2        
+INET	  236       232       4        
+FRAG	  0         0         0        
+
+
+[1;34m=================================================[0m
+[1;36mHAProxy Symptoms[0m
+[1;34m=================================================[0m
+
+=================================================
+Diagnostic finished
+=================================================
+
+[1;32mArquivo gerado:[0m /tmp/whmcs_troubleshooting_20260720_173649.log
