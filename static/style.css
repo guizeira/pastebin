@@ -1241,6 +1241,7 @@ code.ansi-rendered span {
   }
 
   #fullscreenBtn,
+  .home-view-button,
   .raw-view-button,
   #copyCodeBtn {
     flex: 1;

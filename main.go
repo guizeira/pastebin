@@ -15,7 +15,7 @@ const (
 	dataDir       = "./data"
 	staticDir     = "./static"
 	tplDir        = "./templates"
-	assetVersion  = "20260720d"
+	assetVersion  = "20260720e"
 )
 
 var errorMessages = map[string]map[int]string{
