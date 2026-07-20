@@ -56,7 +56,7 @@
   </div>
 
   <main>
-    <div class="preview-window-card">
+    <div class="preview-window-card" id="previewCard">
       <div class="preview-header">
         <div class="window-controls">
           <span class="control-dot red"></span>
@@ -66,6 +66,11 @@
         </div>
 
         <div class="view-actions-wrapper">
+          <button type="button" id="fullscreenBtn" class="raw-view-button" aria-pressed="false">
+            <svg id="fullscreenIconEnter" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+            <svg id="fullscreenIconExit" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true" hidden><path d="M4 14h6v6"/><path d="M20 10h-6V4"/><path d="M14 10l7-7"/><path d="M3 21l7-7"/></svg>
+            <span id="fullscreenText" data-i18n="btn.fullscreen">Fullscreen</span>
+          </button>
           <a href="/{{.ID}}/raw" target="_blank" rel="noopener" class="raw-view-button">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             <span data-i18n="btn.raw">Plain text (RAW)</span>
@@ -114,7 +119,63 @@ const bytes = new TextEncoder().encode(code).length;
 const lineCount = code.split("\n").length;
 const sizeChip = document.getElementById("sizeChip");
 const copyCodeText = document.getElementById("copyCodeText");
+const fullscreenBtn = document.getElementById("fullscreenBtn");
+const fullscreenText = document.getElementById("fullscreenText");
+const fullscreenIconEnter = document.getElementById("fullscreenIconEnter");
+const fullscreenIconExit = document.getElementById("fullscreenIconExit");
+const previewCard = document.getElementById("previewCard");
 const hasAnsi = document.body.dataset.hasAnsi === "1";
+
+function isFullscreenActive() {
+  return document.fullscreenElement === previewCard
+    || previewCard.classList.contains("preview-window-card--immersive");
+}
+
+function updateFullscreenURL(active) {
+  const url = new URL(window.location.href);
+  if (active) url.searchParams.set("fullscreen", "1");
+  else url.searchParams.delete("fullscreen");
+  history.replaceState(null, "", url);
+}
+
+function updateFullscreenUI() {
+  const active = isFullscreenActive();
+  fullscreenText.textContent = PastebinI18n.t(active ? "btn.exitFullscreen" : "btn.fullscreen");
+  fullscreenBtn.setAttribute("aria-pressed", active ? "true" : "false");
+  fullscreenIconEnter.hidden = active;
+  fullscreenIconExit.hidden = !active;
+}
+
+async function enterFullscreen() {
+  try {
+    if (previewCard.requestFullscreen) {
+      await previewCard.requestFullscreen();
+    } else {
+      previewCard.classList.add("preview-window-card--immersive");
+      document.body.classList.add("paste-immersive-open");
+    }
+  } catch {
+    previewCard.classList.add("preview-window-card--immersive");
+    document.body.classList.add("paste-immersive-open");
+  }
+  updateFullscreenUI();
+  updateFullscreenURL(true);
+}
+
+async function exitFullscreen() {
+  if (document.fullscreenElement) {
+    await document.exitFullscreen();
+  }
+  previewCard.classList.remove("preview-window-card--immersive");
+  document.body.classList.remove("paste-immersive-open");
+  updateFullscreenUI();
+  updateFullscreenURL(false);
+}
+
+async function toggleFullscreen() {
+  if (isFullscreenActive()) await exitFullscreen();
+  else await enterFullscreen();
+}
 
 function updateSizeChip() {
   const locale = PastebinI18n.numberLocale();
@@ -127,15 +188,46 @@ function updateSizeChip() {
 
 PastebinI18n.onChange(() => {
   updateSizeChip();
+  updateFullscreenUI();
   if (copyCodeText.textContent !== PastebinI18n.t("btn.copied")) {
     copyCodeText.textContent = PastebinI18n.t("btn.copyCode");
   }
 });
 
 updateSizeChip();
+updateFullscreenUI();
 
 if (!hasAnsi && typeof Prism !== "undefined") {
   Prism.highlightElement(document.getElementById("rawCodeBlock"));
+}
+
+fullscreenBtn.addEventListener("click", () => {
+  toggleFullscreen();
+});
+
+document.addEventListener("fullscreenchange", () => {
+  if (!document.fullscreenElement) {
+    previewCard.classList.remove("preview-window-card--immersive");
+    document.body.classList.remove("paste-immersive-open");
+  }
+  updateFullscreenUI();
+  updateFullscreenURL(!!document.fullscreenElement);
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && previewCard.classList.contains("preview-window-card--immersive") && !document.fullscreenElement) {
+    exitFullscreen();
+    return;
+  }
+  if (e.key.toLowerCase() !== "f" || e.ctrlKey || e.metaKey || e.altKey) return;
+  const tag = document.activeElement?.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA") return;
+  e.preventDefault();
+  toggleFullscreen();
+});
+
+if (new URLSearchParams(window.location.search).get("fullscreen") === "1") {
+  enterFullscreen();
 }
 
 document.getElementById("copyCodeBtn").addEventListener("click", () => {
