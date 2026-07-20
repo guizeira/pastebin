@@ -330,9 +330,13 @@ main {
   border-bottom: 1px solid var(--card-border);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 12px;
   flex-wrap: wrap;
+}
+
+.editor-status-badge {
+  margin-left: auto;
 }
 
 .window-controls {
@@ -810,6 +814,49 @@ button[type="submit"]:disabled {
   background: rgba(139, 92, 246, 0.08);
 }
 
+.syntax-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--card-border);
+  border-radius: 50px;
+}
+
+.syntax-switcher--editor {
+  margin-left: auto;
+  margin-right: 10px;
+}
+
+.syntax-btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 6px 12px;
+  border-radius: 50px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s, background 0.2s;
+  line-height: 1;
+}
+
+.syntax-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.syntax-btn--active {
+  color: white;
+  background: var(--primary-gradient);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
 .preview-window-card {
   background: rgba(12, 10, 20, 0.9);
   border: 1px solid var(--card-border);
@@ -1052,6 +1099,26 @@ code.ansi-rendered span {
     align-items: flex-start;
     gap: 14px;
     padding: 14px;
+  }
+
+  .syntax-switcher--editor {
+    margin: 0;
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .syntax-switcher--editor .syntax-btn {
+    flex: 1;
+    text-align: center;
+  }
+
+  .paste-meta-bar .syntax-switcher {
+    width: 100%;
+  }
+
+  .paste-meta-bar .syntax-btn {
+    flex: 1;
+    text-align: center;
   }
 
   .view-actions-wrapper {

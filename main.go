@@ -64,9 +64,14 @@ func pasteHandler(w http.ResponseWriter, r *http.Request) {
 
 	r.Body = http.MaxBytesReader(w, r.Body, 10<<20) // Limite de 10MB
 
+	lang := normalizeLang(r.URL.Query().Get("lang"))
+	if hdr := r.Header.Get("X-Paste-Lang"); hdr != "" {
+		lang = normalizeLang(hdr)
+	}
+
 	id := randomID()
 	file := filepath.Join(dataDir, id+".txt")
-	
+
 	f, err := os.Create(file)
 	if err != nil {
 		httpError(w, r, http.StatusInternalServerError, "Internal server error")
@@ -80,9 +85,11 @@ func pasteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	_ = savePasteLang(id, lang)
+
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("https://paste.gfonseca.online/" + id))
+	w.Write([]byte(pasteURL(id, lang)))
 }
 
 // ---------------- GET PASTE / VIEW ----------------
@@ -126,16 +133,24 @@ func getPaste(w http.ResponseWriter, r *http.Request) {
 	}
 
 	content := string(contentBytes)
+	lang := resolveLang(r.URL.Query().Get("lang"), loadPasteLang(id), content)
+
 	view := struct {
 		ID          string
 		Content     string
 		ContentHTML template.HTML
 		HasANSI     bool
+		Lang        string
+		Langs       []string
 	}{
 		ID:      id,
 		Content: content,
+		Lang:    lang,
+		Langs:   []string{"bash", "sql", "python"},
 	}
-	if hasANSI(content) {
+
+	// Terminal color sequences only make sense for bash/log pastes.
+	if lang == "bash" && hasANSI(content) {
 		view.HasANSI = true
 		view.ContentHTML = template.HTML(ansiToHTML(content))
 	}

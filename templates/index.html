@@ -75,7 +75,12 @@
           </div>
           <div class="active-tab">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            new_paste.txt
+            <span id="activeTabName">new_paste.sh</span>
+          </div>
+          <div class="syntax-switcher syntax-switcher--editor" role="group" aria-label="Syntax">
+            <button type="button" class="syntax-btn syntax-btn--active" data-syntax="bash">bash</button>
+            <button type="button" class="syntax-btn" data-syntax="sql">sql</button>
+            <button type="button" class="syntax-btn" data-syntax="python">python</button>
           </div>
           <div class="editor-status-badge">
             <span class="live-pulse"></span> <span data-i18n="editor.status">Server ready</span>
@@ -104,7 +109,7 @@
 
         <div class="cli-hint-box">
           <span class="cli-title" data-i18n="cli.title">Via terminal (POST)</span>
-          <code class="cli-code" data-i18n="cli.example">cat file | curl --data-binary @- https://paste.gfonseca.online/paste</code>
+          <code class="cli-code" data-i18n="cli.example">cat file | curl --data-binary @- 'https://paste.gfonseca.online/paste?lang=bash'</code>
         </div>
       </div>
     </form>
@@ -169,6 +174,8 @@
 <script src="/static/i18n.js"></script>
 <script src="/static/prism.js"></script>
 <script src="/static/prism-bash.min.js"></script>
+<script src="/static/prism-sql.min.js"></script>
+<script src="/static/prism-python.min.js"></script>
 <script src="/static/prism-go.min.js"></script>
 <script src="/static/prism-json.min.js"></script>
 
@@ -180,6 +187,23 @@ const charCountEl = document.getElementById("charCount");
 const lineCountEl = document.getElementById("lineCount");
 const submitBtn = document.getElementById("submitBtn");
 const copyBtnText = document.getElementById("copyBtnText");
+const activeTabName = document.getElementById("activeTabName");
+const syntaxButtons = document.querySelectorAll(".syntax-switcher--editor .syntax-btn");
+
+const syntaxExt = { bash: "sh", sql: "sql", python: "py" };
+let selectedSyntax = "bash";
+
+function setSyntax(syntax) {
+  selectedSyntax = syntax;
+  syntaxButtons.forEach((btn) => {
+    btn.classList.toggle("syntax-btn--active", btn.dataset.syntax === syntax);
+  });
+  activeTabName.textContent = `new_paste.${syntaxExt[syntax] || "txt"}`;
+}
+
+syntaxButtons.forEach((btn) => {
+  btn.addEventListener("click", () => setSyntax(btn.dataset.syntax));
+});
 
 function getSubmitBtnHTML() {
   return `<span class="btn-content">
@@ -258,7 +282,11 @@ form.addEventListener("submit", async (e) => {
   submitBtn.innerHTML = `<span class="btn-content">${PastebinI18n.t("btn.generating")}</span>`;
 
   try {
-    const res = await fetch("/paste", { method: "POST", body: content });
+    const res = await fetch(`/paste?lang=${encodeURIComponent(selectedSyntax)}`, {
+      method: "POST",
+      body: content,
+      headers: { "X-Paste-Lang": selectedSyntax },
+    });
     if (!res.ok) throw new Error("fail");
     const text = await res.text();
 
@@ -267,7 +295,7 @@ form.addEventListener("submit", async (e) => {
     document.getElementById("pasteUrl").value = text;
     document.getElementById("curlCommand").innerText = `curl -L ${text}`;
     document.getElementById("wgetCommand").innerText = `wget -qO- ${text}`;
-    document.getElementById("rawLinkBtn").href = text;
+    document.getElementById("rawLinkBtn").href = text.split("?")[0] + "/raw";
 
     card.style.animation = "none";
     card.offsetHeight;

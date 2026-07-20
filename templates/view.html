@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="/static/style.css">
   <link rel="stylesheet" href="/static/prism.css">
 </head>
-<body data-page="view" data-paste-id="{{.ID}}" data-has-ansi="{{if .HasANSI}}1{{else}}0{{end}}">
+<body data-page="view" data-paste-id="{{.ID}}" data-syntax="{{.Lang}}" data-has-ansi="{{if .HasANSI}}1{{else}}0{{end}}">
 
 <div class="lang-switcher" role="group" aria-label="Language">
   <button type="button" class="lang-btn" data-lang="en">EN</button>
@@ -45,6 +45,11 @@
       {{.ID}}
     </span>
     <span class="meta-chip" id="sizeChip">—</span>
+    <div class="syntax-switcher" role="group" aria-label="Syntax">
+      {{range .Langs}}
+      <a href="/{{$.ID}}?lang={{.}}" class="syntax-btn{{if eq . $.Lang}} syntax-btn--active{{end}}">{{.}}</a>
+      {{end}}
+    </div>
   </div>
 
   <main>
@@ -54,7 +59,7 @@
           <span class="control-dot red"></span>
           <span class="control-dot yellow"></span>
           <span class="control-dot green"></span>
-          <span class="preview-filename">paste_{{.ID}}.txt</span>
+          <span class="preview-filename">paste_{{.ID}}.{{if eq .Lang "python"}}py{{else if eq .Lang "sql"}}sql{{else}}sh{{end}}</span>
         </div>
 
         <div class="view-actions-wrapper">
@@ -72,7 +77,7 @@
       {{if .HasANSI}}
       <pre><code id="rawCodeBlock" class="language-ansi ansi-rendered">{{.ContentHTML}}</code></pre>
       {{else}}
-      <pre><code id="rawCodeBlock" class="language-bash">{{.Content}}</code></pre>
+      <pre><code id="rawCodeBlock" class="language-{{.Lang}}">{{.Content}}</code></pre>
       {{end}}
     </div>
 
@@ -91,9 +96,13 @@
 <script src="/static/i18n.js"></script>
 {{if not .HasANSI}}
 <script src="/static/prism.js"></script>
+{{if eq .Lang "bash"}}
 <script src="/static/prism-bash.min.js"></script>
-<script src="/static/prism-go.min.js"></script>
-<script src="/static/prism-json.min.js"></script>
+{{else if eq .Lang "sql"}}
+<script src="/static/prism-sql.min.js"></script>
+{{else if eq .Lang "python"}}
+<script src="/static/prism-python.min.js"></script>
+{{end}}
 {{end}}
 
 <script>

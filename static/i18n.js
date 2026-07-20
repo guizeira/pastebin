@@ -25,7 +25,7 @@
       "btn.generating": "Generating link…",
       "cli.title": "Via terminal (POST)",
       "cli.example":
-        "cat file | curl --data-binary @- https://paste.gfonseca.online/paste",
+        "cat file | curl --data-binary @- 'https://paste.gfonseca.online/paste?lang=bash'",
       "result.title": "Link generated successfully",
       "result.subtitle": "Your content has been saved and is ready to share.",
       "btn.copyLink": "Copy link",
@@ -45,6 +45,7 @@
       "meta.lines": "lines",
       "toast.error": "Could not save the paste. Please try again.",
       "lang.label": "Language",
+      "syntax.label": "Format",
     },
     pt: {
       "meta.title": "GFONSECA Pastebin — Compartilhamento Inteligente de Código",
@@ -68,7 +69,7 @@
       "btn.generating": "Gerando link…",
       "cli.title": "Via terminal (POST)",
       "cli.example":
-        "cat arquivo | curl --data-binary @- https://paste.gfonseca.online/paste",
+        "cat arquivo | curl --data-binary @- 'https://paste.gfonseca.online/paste?lang=bash'",
       "result.title": "Link gerado com sucesso",
       "result.subtitle": "Seu conteúdo foi salvo e está pronto para compartilhar.",
       "btn.copyLink": "Copiar link",
@@ -88,6 +89,7 @@
       "meta.lines": "linhas",
       "toast.error": "Não foi possível salvar o paste. Tente novamente.",
       "lang.label": "Idioma",
+      "syntax.label": "Formato",
     },
   };
 
