@@ -29,13 +29,16 @@ var errorMessages = map[string]map[int]string{
 	},
 }
 
-// Carrega os dois templates necessários
-var tplIndex = template.Must(template.New("index").Funcs(template.FuncMap{
+var tplFuncs = template.FuncMap{
 	"asset": func(path string) string { return path + "?v=" + assetVersion },
-}).ParseFiles(filepath.Join(tplDir, "index.html")))
-var tplView = template.Must(template.New("view").Funcs(template.FuncMap{
-	"asset": func(path string) string { return path + "?v=" + assetVersion },
-}).ParseFiles(filepath.Join(tplDir, "view.html")))
+}
+
+var tplIndex = template.Must(
+	template.New("index.html").Funcs(tplFuncs).ParseFiles(filepath.Join(tplDir, "index.html")),
+)
+var tplView = template.Must(
+	template.New("view.html").Funcs(tplFuncs).ParseFiles(filepath.Join(tplDir, "view.html")),
+)
 
 func randomID() string {
 	b := make([]byte, 8)
