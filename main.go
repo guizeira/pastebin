@@ -15,7 +15,7 @@ const (
 	dataDir       = "./data"
 	staticDir     = "./static"
 	tplDir        = "./templates"
-	assetVersion  = "20260720c"
+	assetVersion  = "20260720d"
 )
 
 var errorMessages = map[string]map[int]string{
@@ -33,12 +33,25 @@ var tplFuncs = template.FuncMap{
 	"asset": func(path string) string { return path + "?v=" + assetVersion },
 }
 
+const (
+	tplIndexName = "index.html"
+	tplViewName  = "view.html"
+)
+
 var tplIndex = template.Must(
-	template.New("index.html").Funcs(tplFuncs).ParseFiles(filepath.Join(tplDir, "index.html")),
+	template.New(tplIndexName).Funcs(tplFuncs).ParseFiles(filepath.Join(tplDir, tplIndexName)),
 )
 var tplView = template.Must(
-	template.New("view.html").Funcs(tplFuncs).ParseFiles(filepath.Join(tplDir, "view.html")),
+	template.New(tplViewName).Funcs(tplFuncs).ParseFiles(filepath.Join(tplDir, tplViewName)),
 )
+
+func renderHTML(w http.ResponseWriter, r *http.Request, tpl *template.Template, name string, data any) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if err := tpl.ExecuteTemplate(w, name, data); err != nil {
+		println("template render error [" + name + "]:", err.Error())
+		httpError(w, r, http.StatusInternalServerError, "Internal server error")
+	}
+}
 
 func randomID() string {
 	b := make([]byte, 8)
@@ -106,8 +119,7 @@ func getPaste(w http.ResponseWriter, r *http.Request) {
 	
 	// Se for a raiz, mostra o index (criador de pastes)
 	if path == "" {
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		_ = tplIndex.Execute(w, nil)
+		renderHTML(w, r, tplIndex, tplIndexName, nil)
 		return
 	}
 
@@ -163,8 +175,7 @@ func getPaste(w http.ResponseWriter, r *http.Request) {
 		view.ContentHTML = template.HTML(ansiToHTML(content))
 	}
 
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	_ = tplView.Execute(w, view)
+	renderHTML(w, r, tplView, tplViewName, view)
 }
 
 // ---------------- STATIC ----------------
