@@ -12,8 +12,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="/static/style.css">
-  <link rel="stylesheet" href="/static/prism.css">
+  <link rel="stylesheet" href="{{asset "/static/style.css"}}">
+  <link rel="stylesheet" href="{{asset "/static/prism.css"}}">
 </head>
 <body data-page="index">
 
@@ -78,7 +78,6 @@
             <span id="activeTabName">new_paste.sh</span>
           </div>
           <div class="syntax-switcher-wrap syntax-switcher-wrap--editor">
-            <span class="syntax-label" data-i18n="syntax.label">Format</span>
             <div class="syntax-switcher syntax-switcher--editor" role="group" aria-label="Syntax">
               <button type="button" class="syntax-btn syntax-btn--active" data-syntax="bash">bash</button>
               <button type="button" class="syntax-btn" data-syntax="sql">sql</button>
@@ -174,13 +173,13 @@
 
 <div class="toast" id="toast" role="alert"></div>
 
-<script src="/static/i18n.js"></script>
-<script src="/static/prism.js"></script>
-<script src="/static/prism-bash.min.js"></script>
-<script src="/static/prism-sql.min.js"></script>
-<script src="/static/prism-python.min.js"></script>
-<script src="/static/prism-go.min.js"></script>
-<script src="/static/prism-json.min.js"></script>
+<script src="{{asset "/static/i18n.js"}}"></script>
+<script src="{{asset "/static/prism.js"}}"></script>
+<script src="{{asset "/static/prism-bash.min.js"}}"></script>
+<script src="{{asset "/static/prism-sql.min.js"}}"></script>
+<script src="{{asset "/static/prism-python.min.js"}}"></script>
+<script src="{{asset "/static/prism-go.min.js"}}"></script>
+<script src="{{asset "/static/prism-json.min.js"}}"></script>
 
 <script>
 const form = document.getElementById("pasteForm");

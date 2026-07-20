@@ -109,7 +109,8 @@
   }
 
   function format(key, vars) {
-    let text = messages[currentLang][key] || messages.en[key] || key;
+    let text = messages[currentLang][key] || messages.en[key];
+    if (!text) return null;
     if (vars) {
       Object.entries(vars).forEach(([k, v]) => {
         text = text.replace(new RegExp(`\\{${k}\\}`, "g"), String(v));
@@ -119,7 +120,7 @@
   }
 
   function t(key, vars) {
-    return format(key, vars);
+    return format(key, vars) || key;
   }
 
   function localeTag() {
@@ -138,15 +139,18 @@
     document.documentElement.lang = localeTag();
 
     document.querySelectorAll("[data-i18n]").forEach((el) => {
-      el.textContent = t(el.dataset.i18n);
+      const text = format(el.dataset.i18n);
+      if (text) el.textContent = text;
     });
 
     document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
-      el.placeholder = t(el.dataset.i18nPlaceholder);
+      const text = format(el.dataset.i18nPlaceholder);
+      if (text) el.placeholder = text;
     });
 
     document.querySelectorAll("[data-i18n-title]").forEach((el) => {
-      el.title = t(el.dataset.i18nTitle);
+      const text = format(el.dataset.i18nTitle);
+      if (text) el.title = text;
     });
 
     const metaDesc = document.querySelector('meta[name="description"]');

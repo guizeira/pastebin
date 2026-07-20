@@ -11,8 +11,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="/static/style.css">
-  <link rel="stylesheet" href="/static/prism.css">
+  <link rel="stylesheet" href="{{asset "/static/style.css"}}">
+  <link rel="stylesheet" href="{{asset "/static/prism.css"}}">
 </head>
 <body data-page="view" data-paste-id="{{.ID}}" data-syntax="{{.Lang}}" data-has-ansi="{{if .HasANSI}}1{{else}}0{{end}}">
 
@@ -45,31 +45,33 @@
       {{.ID}}
     </span>
     <span class="meta-chip" id="sizeChip">—</span>
-    <div class="syntax-switcher-wrap">
-      <span class="syntax-label" data-i18n="syntax.label">Format</span>
-      <div class="syntax-switcher" role="group" aria-label="Syntax">
-        {{range .Langs}}
-        <a href="/{{$.ID}}?lang={{.}}" class="syntax-btn{{if eq . $.Lang}} syntax-btn--active{{end}}">{{.}}</a>
-        {{end}}
-      </div>
-    </div>
   </div>
 
   <main>
     <div class="preview-window-card" id="previewCard">
       <div class="preview-header">
-        <div class="window-controls">
-          <span class="control-dot red"></span>
-          <span class="control-dot yellow"></span>
-          <span class="control-dot green"></span>
-          <span class="preview-filename">paste_{{.ID}}.{{if eq .Lang "python"}}py{{else if eq .Lang "sql"}}sql{{else}}sh{{end}}</span>
+        <div class="preview-header-left">
+          <div class="window-controls">
+            <span class="control-dot red"></span>
+            <span class="control-dot yellow"></span>
+            <span class="control-dot green"></span>
+            <span class="preview-filename">paste_{{.ID}}.{{if eq .Lang "python"}}py{{else if eq .Lang "sql"}}sql{{else}}sh{{end}}</span>
+          </div>
+        </div>
+
+        <div class="syntax-switcher-wrap syntax-switcher-wrap--view">
+          <div class="syntax-switcher" role="group" aria-label="Syntax">
+            {{range .Langs}}
+            <a href="/{{$.ID}}?lang={{.}}" class="syntax-btn{{if eq . $.Lang}} syntax-btn--active{{end}}">{{.}}</a>
+            {{end}}
+          </div>
         </div>
 
         <div class="view-actions-wrapper">
-          <button type="button" id="fullscreenBtn" class="raw-view-button" aria-pressed="false">
+          <button type="button" id="fullscreenBtn" class="raw-view-button" aria-pressed="false" title="F">
             <svg id="fullscreenIconEnter" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
             <svg id="fullscreenIconExit" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true" hidden><path d="M4 14h6v6"/><path d="M20 10h-6V4"/><path d="M14 10l7-7"/><path d="M3 21l7-7"/></svg>
-            <span id="fullscreenText" data-i18n="btn.fullscreen">Fullscreen</span>
+            <span id="fullscreenText">Tela cheia</span>
           </button>
           <a href="/{{.ID}}/raw" target="_blank" rel="noopener" class="raw-view-button">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
@@ -101,15 +103,15 @@
   <p><a href="/" data-i18n="footer.createNew">Create new paste</a> · paste.gfonseca.online</p>
 </footer>
 
-<script src="/static/i18n.js"></script>
+<script src="{{asset "/static/i18n.js"}}"></script>
 {{if not .HasANSI}}
-<script src="/static/prism.js"></script>
+<script src="{{asset "/static/prism.js"}}"></script>
 {{if eq .Lang "bash"}}
-<script src="/static/prism-bash.min.js"></script>
+<script src="{{asset "/static/prism-bash.min.js"}}"></script>
 {{else if eq .Lang "sql"}}
-<script src="/static/prism-sql.min.js"></script>
+<script src="{{asset "/static/prism-sql.min.js"}}"></script>
 {{else if eq .Lang "python"}}
-<script src="/static/prism-python.min.js"></script>
+<script src="{{asset "/static/prism-python.min.js"}}"></script>
 {{end}}
 {{end}}
 
@@ -123,12 +125,25 @@ const fullscreenBtn = document.getElementById("fullscreenBtn");
 const fullscreenText = document.getElementById("fullscreenText");
 const fullscreenIconEnter = document.getElementById("fullscreenIconEnter");
 const fullscreenIconExit = document.getElementById("fullscreenIconExit");
-const previewCard = document.getElementById("previewCard");
 const hasAnsi = document.body.dataset.hasAnsi === "1";
 
+const FS_ENTER = { pt: "Tela cheia", en: "Fullscreen" };
+const FS_EXIT = { pt: "Sair da tela cheia", en: "Exit fullscreen" };
+
+function uiLang() {
+  return typeof PastebinI18n !== "undefined" ? PastebinI18n.getLanguage() : "pt";
+}
+
+function fullscreenLabel(active) {
+  const lang = uiLang();
+  const key = active ? "btn.exitFullscreen" : "btn.fullscreen";
+  const i18n = typeof PastebinI18n !== "undefined" ? PastebinI18n.format(key) : null;
+  if (i18n) return i18n;
+  return active ? FS_EXIT[lang] || FS_EXIT.pt : FS_ENTER[lang] || FS_ENTER.pt;
+}
+
 function isFullscreenActive() {
-  return document.fullscreenElement === previewCard
-    || previewCard.classList.contains("preview-window-card--immersive");
+  return document.body.classList.contains("paste-fs-active");
 }
 
 function updateFullscreenURL(active) {
@@ -140,41 +155,30 @@ function updateFullscreenURL(active) {
 
 function updateFullscreenUI() {
   const active = isFullscreenActive();
-  fullscreenText.textContent = PastebinI18n.t(active ? "btn.exitFullscreen" : "btn.fullscreen");
+  fullscreenText.textContent = fullscreenLabel(active);
   fullscreenBtn.setAttribute("aria-pressed", active ? "true" : "false");
   fullscreenIconEnter.hidden = active;
   fullscreenIconExit.hidden = !active;
 }
 
-async function enterFullscreen() {
-  try {
-    if (previewCard.requestFullscreen) {
-      await previewCard.requestFullscreen();
-    } else {
-      previewCard.classList.add("preview-window-card--immersive");
-      document.body.classList.add("paste-immersive-open");
-    }
-  } catch {
-    previewCard.classList.add("preview-window-card--immersive");
-    document.body.classList.add("paste-immersive-open");
-  }
+function enterFullscreen() {
+  document.body.classList.add("paste-fs-active");
+  document.documentElement.style.overflow = "hidden";
   updateFullscreenUI();
   updateFullscreenURL(true);
 }
 
-async function exitFullscreen() {
-  if (document.fullscreenElement) {
-    await document.exitFullscreen();
-  }
-  previewCard.classList.remove("preview-window-card--immersive");
-  document.body.classList.remove("paste-immersive-open");
+function exitFullscreen() {
+  document.body.classList.remove("paste-fs-active");
+  document.documentElement.style.overflow = "";
+  if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
   updateFullscreenUI();
   updateFullscreenURL(false);
 }
 
-async function toggleFullscreen() {
-  if (isFullscreenActive()) await exitFullscreen();
-  else await enterFullscreen();
+function toggleFullscreen() {
+  if (isFullscreenActive()) exitFullscreen();
+  else enterFullscreen();
 }
 
 function updateSizeChip() {
@@ -201,21 +205,11 @@ if (!hasAnsi && typeof Prism !== "undefined") {
   Prism.highlightElement(document.getElementById("rawCodeBlock"));
 }
 
-fullscreenBtn.addEventListener("click", () => {
-  toggleFullscreen();
-});
-
-document.addEventListener("fullscreenchange", () => {
-  if (!document.fullscreenElement) {
-    previewCard.classList.remove("preview-window-card--immersive");
-    document.body.classList.remove("paste-immersive-open");
-  }
-  updateFullscreenUI();
-  updateFullscreenURL(!!document.fullscreenElement);
-});
+fullscreenBtn.addEventListener("click", toggleFullscreen);
 
 document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && previewCard.classList.contains("preview-window-card--immersive") && !document.fullscreenElement) {
+  if (e.key === "Escape" && isFullscreenActive()) {
+    e.preventDefault();
     exitFullscreen();
     return;
   }

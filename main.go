@@ -12,9 +12,10 @@ import (
 )
 
 const (
-	dataDir   = "./data"
-	staticDir = "./static"
-	tplDir    = "./templates"
+	dataDir       = "./data"
+	staticDir     = "./static"
+	tplDir        = "./templates"
+	assetVersion  = "20260720c"
 )
 
 var errorMessages = map[string]map[int]string{
@@ -29,8 +30,12 @@ var errorMessages = map[string]map[int]string{
 }
 
 // Carrega os dois templates necessários
-var tplIndex = template.Must(template.ParseFiles(filepath.Join(tplDir, "index.html")))
-var tplView = template.Must(template.ParseFiles(filepath.Join(tplDir, "view.html")))
+var tplIndex = template.Must(template.New("index").Funcs(template.FuncMap{
+	"asset": func(path string) string { return path + "?v=" + assetVersion },
+}).ParseFiles(filepath.Join(tplDir, "index.html")))
+var tplView = template.Must(template.New("view").Funcs(template.FuncMap{
+	"asset": func(path string) string { return path + "?v=" + assetVersion },
+}).ParseFiles(filepath.Join(tplDir, "view.html")))
 
 func randomID() string {
 	b := make([]byte, 8)
@@ -168,6 +173,7 @@ func staticHandler() http.Handler {
 		} else if strings.HasSuffix(r.URL.Path, ".js") {
 			w.Header().Set("Content-Type", "application/javascript; charset=utf-8")
 		}
+		w.Header().Set("Cache-Control", "public, max-age=3600")
 		fs.ServeHTTP(w, r)
 	}))
 }
